@@ -2,7 +2,6 @@
 #include <fstream>
 #include <string>
 #include <cstdlib>
-#include <ctime>
 
 // Caesar cipher encryption function
 std::string encryptPassword(const std::string& password, int shift) {
@@ -81,6 +80,42 @@ bool login(std::string& email, std::string& password) {
     return false;
 }
 
+// Function to delete a user
+void deleteUser(const std::string& email) {
+    std::ifstream usersFileIn("users.txt");
+    if (!usersFileIn) {
+        std::cerr << "Error: Could not open users file." << std::endl;
+        return;
+    }
+
+    std::ofstream usersFileOut("temp.txt");
+    if (!usersFileOut) {
+        std::cerr << "Error: Could not create temporary file." << std::endl;
+        return;
+    }
+
+    std::string storedEmail, storedPassword;
+    while (usersFileIn >> storedEmail >> storedPassword) {
+        if (email != storedEmail) {
+            usersFileOut << storedEmail << " " << storedPassword << std::endl;
+        }
+    }
+
+    usersFileIn.close();
+    usersFileOut.close();
+
+    if (remove("users.txt") != 0) {
+        std::cerr << "Error: Failed to delete user." << std::endl;
+        return;
+    }
+
+    if (rename("temp.txt", "users.txt") != 0) {
+        std::cerr << "Error: Failed to update users file." << std::endl;
+        return;
+    }
+
+    std::cout << "User deleted successfully!" << std::endl;
+}
 // Function to store password for a website
 void storePassword(const std::string& email) {
     std::ofstream passwordsFile("passwords.txt", std::ios::app);
@@ -104,7 +139,6 @@ void storePassword(const std::string& email) {
         const int passwordLength = 10; // You can adjust the length of the generated password
 
         password = "";
-        srand(time(0));
         for (int i = 0; i < passwordLength; ++i) {
             password += charset[rand() % charsetSize];
         }
@@ -122,7 +156,6 @@ void storePassword(const std::string& email) {
         const int passwordLength = 10; // You can adjust the length of the generated password
 
         password = "";
-        srand(time(0));
         for (int i = 0; i < passwordLength; ++i) {
             password += charset[rand() % charsetSize];
         }
@@ -138,6 +171,7 @@ void storePassword(const std::string& email) {
 
     std::cout << "Password for " << website << " stored successfully!" << std::endl;
 }
+
 
 // Function to show stored passwords
 void showStoredPasswords(const std::string& email) {
@@ -172,7 +206,7 @@ int main() {
         case 2:
             if (login(email, password)) {
                 int subChoice;
-                std::cout << "\n1. Store password for website\n2. Show stored passwords\n3. Return to main menu\nEnter your choice: ";
+                std::cout << "\n1. Store password for website\n2. Show stored passwords\n3. Delete user\n4. Return to main menu\nEnter your choice: ";
                 std::cin >> subChoice;
                 switch (subChoice) {
                 case 1:
@@ -182,6 +216,9 @@ int main() {
                     showStoredPasswords(email);
                     break;
                 case 3:
+                    deleteUser(email);
+                    return 0; // Exiting after deleting the user
+                case 4:
                     // Returning to the main menu
                     break;
                 default:
@@ -199,3 +236,4 @@ int main() {
 
     return 0;
 }
+
