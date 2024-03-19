@@ -92,8 +92,42 @@ void storePassword(const std::string& email) {
     std::string website, password;
     std::cout << "Enter website: ";
     std::cin >> website;
-    std::cout << "Enter password for " << website << ": ";
-    std::cin >> password;
+
+    int choice;
+    std::cout << "Choose an option:\n1. Generate a random password\n2. Enter your own password\nEnter your choice: ";
+    std::cin >> choice;
+
+    switch (choice) {
+    case 1: {
+        const std::string charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+        const int charsetSize = charset.size();
+        const int passwordLength = 10; // You can adjust the length of the generated password
+
+        password = "";
+        srand(time(0));
+        for (int i = 0; i < passwordLength; ++i) {
+            password += charset[rand() % charsetSize];
+        }
+        break;
+    }
+    case 2: {
+        std::cout << "Enter password: ";
+        std::cin >> password;
+        break;
+    }
+    default:
+        std::cout << "Invalid choice. Using a generated password." << std::endl;
+        const std::string charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+        const int charsetSize = charset.size();
+        const int passwordLength = 10; // You can adjust the length of the generated password
+
+        password = "";
+        srand(time(0));
+        for (int i = 0; i < passwordLength; ++i) {
+            password += charset[rand() % charsetSize];
+        }
+        break;
+    }
 
     // Encrypt password
     password = encryptPassword(password, 3);
