@@ -18,7 +18,7 @@ std::string encryptPassword(const std::string& password, int shift) {
             else {
                 base = 'a';
             }
-            c = ((c - base + shift) % 26) + base; // Assuming there are 26 alphabetic characters
+            c = ((c - base + shift) % 26) + base; 
         }
     }
     return encryptedPassword;
@@ -136,7 +136,7 @@ void storePassword(const std::string& email) {
     case 1: {
         const std::string charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
         const int charsetSize = charset.size();
-        const int passwordLength = 10; // You can adjust the length of the generated password
+        const int passwordLength = 12; 
 
         password = "";
         for (int i = 0; i < passwordLength; ++i) {
@@ -153,7 +153,7 @@ void storePassword(const std::string& email) {
         std::cout << "Invalid choice. Using a generated password." << std::endl;
         const std::string charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
         const int charsetSize = charset.size();
-        const int passwordLength = 10; // You can adjust the length of the generated password
+        const int passwordLength = 12; 
 
         password = "";
         for (int i = 0; i < passwordLength; ++i) {
@@ -163,7 +163,7 @@ void storePassword(const std::string& email) {
     }
 
     // Encrypt password
-    password = encryptPassword(password, 3);
+    password = encryptPassword(password, 4);
 
     // Write email, website, and password to file
     passwordsFile << email << " " << website << " " << password << std::endl;
@@ -184,7 +184,7 @@ void showStoredPasswords(const std::string& email) {
     std::string userEmail, website, encryptedPassword;
     while (passwordsFile >> userEmail >> website >> encryptedPassword) {
         if (email == userEmail) {
-            std::cout << "Website: " << website << ", Password: " << decryptPassword(encryptedPassword, 3) << std::endl;
+            std::cout << "Website: " << website << ", Password: " << decryptPassword(encryptedPassword, 4) << std::endl;
         }
     }
 
