@@ -1,0 +1,167 @@
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <cstdlib>
+#include <ctime>
+
+// Caesar cipher encryption function
+std::string encryptPassword(const std::string& password, int shift) {
+    std::string encryptedPassword = password;
+    for (char& c : encryptedPassword) {
+        if (isalnum(c)) { // Check if character is alphanumeric
+            char base;
+            if (isdigit(c)) {
+                base = '0';
+            }
+            else if (isupper(c)) {
+                base = 'A';
+            }
+            else {
+                base = 'a';
+            }
+            c = ((c - base + shift) % 26) + base; // Assuming there are 26 alphabetic characters
+        }
+    }
+    return encryptedPassword;
+}
+
+// Caesar cipher decryption function
+std::string decryptPassword(const std::string& encryptedPassword, int shift) {
+    return encryptPassword(encryptedPassword, 26 - shift); // Reversing the shift for decryption
+}
+
+// Function to sign up
+void signUp() {
+    std::ofstream usersFile("users.txt", std::ios::app);
+    if (!usersFile) {
+        std::cerr << "Error: Could not open users file." << std::endl;
+        return;
+    }
+
+    std::string email, password;
+    std::cout << "Enter your email: ";
+    std::cin >> email;
+    std::cout << "Enter your password: ";
+    std::cin >> password;
+
+    // Encrypt password
+    password = encryptPassword(password, 3);
+
+    // Write email and password to file
+    usersFile << email << " " << password << std::endl;
+    usersFile.close();
+
+    std::cout << "Account created successfully!" << std::endl;
+}
+
+// Function to log in
+bool login(std::string& email, std::string& password) {
+    std::ifstream usersFile("users.txt");
+    if (!usersFile) {
+        std::cerr << "Error: Could not open users file." << std::endl;
+        return false;
+    }
+
+    std::string storedEmail, storedPassword;
+    std::cout << "Enter your email: ";
+    std::cin >> email;
+    std::cout << "Enter your password: ";
+    std::cin >> password;
+
+    while (usersFile >> storedEmail >> storedPassword) {
+        if (email == storedEmail && password == decryptPassword(storedPassword, 3)) {
+            std::cout << "Login successful!" << std::endl;
+            usersFile.close();
+            return true;
+        }
+    }
+
+    std::cout << "Invalid email or password. Login failed!" << std::endl;
+    usersFile.close();
+    return false;
+}
+
+// Function to store password for a website
+void storePassword(const std::string& email) {
+    std::ofstream passwordsFile("passwords.txt", std::ios::app);
+    if (!passwordsFile) {
+        std::cerr << "Error: Could not open passwords file." << std::endl;
+        return;
+    }
+
+    std::string website, password;
+    std::cout << "Enter website: ";
+    std::cin >> website;
+    std::cout << "Enter password for " << website << ": ";
+    std::cin >> password;
+
+    // Encrypt password
+    password = encryptPassword(password, 3);
+
+    // Write email, website, and password to file
+    passwordsFile << email << " " << website << " " << password << std::endl;
+    passwordsFile.close();
+
+    std::cout << "Password for " << website << " stored successfully!" << std::endl;
+}
+
+// Function to show stored passwords
+void showStoredPasswords(const std::string& email) {
+    std::ifstream passwordsFile("passwords.txt");
+    if (!passwordsFile) {
+        std::cerr << "Error: Could not open passwords file." << std::endl;
+        return;
+    }
+
+    std::string userEmail, website, encryptedPassword;
+    while (passwordsFile >> userEmail >> website >> encryptedPassword) {
+        if (email == userEmail) {
+            std::cout << "Website: " << website << ", Password: " << decryptPassword(encryptedPassword, 3) << std::endl;
+        }
+    }
+
+    passwordsFile.close();
+}
+
+int main() {
+    int choice;
+    std::string email, password;
+
+    do {
+        std::cout << "\nMenu:\n1. Sign up\n2. Log in\n3. Exit\nEnter your choice: ";
+        std::cin >> choice;
+
+        switch (choice) {
+        case 1:
+            signUp();
+            break;
+        case 2:
+            if (login(email, password)) {
+                int subChoice;
+                std::cout << "\n1. Store password for website\n2. Show stored passwords\n3. Return to main menu\nEnter your choice: ";
+                std::cin >> subChoice;
+                switch (subChoice) {
+                case 1:
+                    storePassword(email);
+                    break;
+                case 2:
+                    showStoredPasswords(email);
+                    break;
+                case 3:
+                    // Returning to the main menu
+                    break;
+                default:
+                    std::cout << "Invalid choice. Please try again." << std::endl;
+                }
+            }
+            break;
+        case 3:
+            std::cout << "Exiting..." << std::endl;
+            break;
+        default:
+            std::cout << "Invalid choice. Please try again." << std::endl;
+        }
+    } while (choice != 3);
+
+    return 0;
+}
