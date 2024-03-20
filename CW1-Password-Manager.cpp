@@ -88,7 +88,7 @@ void deleteUser(const std::string& email) {
         return;
     }
 
-    std::ofstream usersFileOut("temp.txt");
+    std::ofstream usersFileOut("temporary.txt");
     if (!usersFileOut) {
         std::cerr << "Error: Could not create temporary file." << std::endl;
         return;
@@ -109,13 +109,14 @@ void deleteUser(const std::string& email) {
         return;
     }
 
-    if (rename("temp.txt", "users.txt") != 0) {
+    if (rename("temporary.txt", "users.txt") != 0) {
         std::cerr << "Error: Failed to update users file." << std::endl;
         return;
     }
 
     std::cout << "User deleted successfully!" << std::endl;
 }
+
 // Function to store password for a website
 void storePassword(const std::string& email) {
     std::ofstream passwordsFile("passwords.txt", std::ios::app);
@@ -125,45 +126,42 @@ void storePassword(const std::string& email) {
     }
 
     std::string website, password;
-    std::cout << "Enter website: ";
-    std::cin >> website;
-
     int choice;
-    std::cout << "Choose an option:\n1. Generate a random password\n2. Enter your own password\nEnter your choice: ";
-    std::cin >> choice;
+    bool validChoice = false;
 
-    switch (choice) {
-    case 1: {
-        const std::string charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-        const int charsetSize = charset.size();
-        const int passwordLength = 12; 
+    do {
+        std::cout << "Enter website: ";
+        std::cin >> website;
 
-        password = "";
-        for (int i = 0; i < passwordLength; ++i) {
-            password += charset[rand() % charsetSize];
+        std::cout << "Choose an option:\n1. Generate a random password\n2. Enter your own password\nEnter your choice: ";
+        std::cin >> choice;
+
+        switch (choice) {
+        case 1: {
+            const std::string charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+            const int charsetSize = charset.size();
+            const int passwordLength = 12;
+
+            password = "";
+            for (int i = 0; i < passwordLength; ++i) {
+                password += charset[rand() % charsetSize];
+            }
+            validChoice = true;  // Set validChoice to true to exit the loop
+            break;
         }
-        break;
-    }
-    case 2: {
-        std::cout << "Enter password: ";
-        std::cin >> password;
-        break;
-    }
-    default:
-        std::cout << "Invalid choice. Using a generated password." << std::endl;
-        const std::string charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-        const int charsetSize = charset.size();
-        const int passwordLength = 12; 
-
-        password = "";
-        for (int i = 0; i < passwordLength; ++i) {
-            password += charset[rand() % charsetSize];
+        case 2: {
+            std::cout << "Enter password: ";
+            std::cin >> password;
+            validChoice = true;  // Set validChoice to true to exit the loop
+            break;
         }
-        break;
-    }
+        default:
+            std::cout << "Invalid choice. Please try again." << std::endl;
+        }
+    } while (!validChoice);  // Repeat the loop until a valid choice is made
 
     // Encrypt password
-    password = encryptPassword(password, 4);
+    password = encryptPassword(password, 3);
 
     // Write email, website, and password to file
     passwordsFile << email << " " << website << " " << password << std::endl;
@@ -171,7 +169,6 @@ void storePassword(const std::string& email) {
 
     std::cout << "Password for " << website << " stored successfully!" << std::endl;
 }
-
 
 // Function to show stored passwords
 void showStoredPasswords(const std::string& email) {
@@ -184,7 +181,7 @@ void showStoredPasswords(const std::string& email) {
     std::string userEmail, website, encryptedPassword;
     while (passwordsFile >> userEmail >> website >> encryptedPassword) {
         if (email == userEmail) {
-            std::cout << "Website: " << website << ", Password: " << decryptPassword(encryptedPassword, 4) << std::endl;
+            std::cout << "Website: " << website << ", Password: " << decryptPassword(encryptedPassword, 3) << std::endl;
         }
     }
 
