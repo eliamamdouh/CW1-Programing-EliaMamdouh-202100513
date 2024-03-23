@@ -233,7 +233,7 @@ int main() {
     std::string email, password;
 
     do {
-        std::cout << "\nWelcome to Your Password Manager Application:\n1. Sign up\n2. Log in\n3. Exit\nEnter your choice: ";
+        std::cout << "\nWelcome to Your Password Manager Application:-\n1. Sign up\n2. Log in\n3. Exit\nEnter your choice: ";
         std::cin >> choice;
 
         switch (choice) {
