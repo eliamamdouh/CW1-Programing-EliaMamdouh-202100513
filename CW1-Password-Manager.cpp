@@ -29,6 +29,25 @@ std::string decryptPassword(const std::string& encryptedPassword, int shift) {
     return encryptPassword(encryptedPassword, 26 - shift); // Reversing the shift for decryption
 }
 
+// Function to check if email already exists
+bool isEmailExists(const std::string& email) {
+    std::ifstream usersFile("users.txt");
+    if (!usersFile) {
+        return false; // Assuming file doesn't exist means email doesn't exist
+    }
+
+    std::string storedEmail, storedPassword;
+    while (usersFile >> storedEmail >> storedPassword) {
+        if (email == storedEmail) {
+            usersFile.close();
+            return true; // Email found
+        }
+    }
+
+    usersFile.close();
+    return false; // Email not found
+}
+
 // Function to sign up
 void signUp() {
     std::ofstream usersFile("users.txt", std::ios::app);
@@ -40,6 +59,12 @@ void signUp() {
     std::string email, password;
     std::cout << "Enter your email: ";
     std::cin >> email;
+
+    // Check if email already exists
+    if (isEmailExists(email)) {
+        std::cerr << "Error: This email is already registered. Please use a different email." << std::endl;
+        return;
+    }
 
     // Check if email contains '@' symbol
     if (email.find('@') == std::string::npos) {
