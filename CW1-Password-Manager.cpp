@@ -243,7 +243,7 @@ int main() {
         case 2:
             if (login(email, password)) {
                 int subChoice;
-                std::cout << "\n1. Store you websites' passwords \n2. Show your stored passwords\n3. Delete user\n4. Return to main menu\nEnter your choice: ";
+                std::cout << "\n1. Store your websites' passwords \n2. Show your stored passwords\n3. Delete user\n4. Return to main menu\nEnter your choice: ";
                 std::cin >> subChoice;
                 switch (subChoice) {
                 case 1:
