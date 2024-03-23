@@ -40,8 +40,23 @@ void signUp() {
     std::string email, password;
     std::cout << "Enter your email: ";
     std::cin >> email;
+
+    // Check if email contains '@' symbol
+    if (email.find('@') == std::string::npos) {
+        std::cerr << "Error: Invalid email format. Email must contain '@' symbol." << std::endl;
+        return;
+    }
+
     std::cout << "Enter your password: ";
     std::cin >> password;
+
+    // Check password length and if it contains both letters and numbers
+    if (password.length() < 7 ||
+        password.find_first_of("0123456789") == std::string::npos ||
+        password.find_first_of("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ") == std::string::npos) {
+        std::cerr << "Error: Password must be at least 7 characters long and contain both letters and numbers." << std::endl;
+        return;
+    }
 
     // Encrypt password
     password = encryptPassword(password, 3);
