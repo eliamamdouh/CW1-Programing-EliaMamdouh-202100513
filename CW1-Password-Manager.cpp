@@ -84,7 +84,7 @@ void signUp() {
     }
 
     // Encrypt password
-    password = encryptPassword(password, 4);
+    password = encryptPassword(password, 3);
 
     // Write email and password to file
     usersFile << email << " " << password << std::endl;
